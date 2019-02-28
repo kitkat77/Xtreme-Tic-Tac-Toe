@@ -45,7 +45,8 @@ class Random_Player():
 				heuristic_score = 30
 			return [heuristic_score, None] #[Score, Move]
 		
-		best_move = (-1, -1, -1)
+		# TAKE CARE WHEN THIS LENGTH BECOMES EQUAL TO ZERO
+		best_move = cells[0]
 
 		for move in cells:
 			board.update(old_move, move, flag)
@@ -68,7 +69,7 @@ class Random_Player():
 	def move(self, board, old_move, flag):
 		# TAKE CARE OF CASE WHEN EVERYTHING  IS ALLOWED IN THE BEGINNING
 		# ADD ITERATIVE DEEPENING TO HANDLE IN CASE OF TIME EXCEEDANCE
-		[_, best_move] = self.minimax(board, old_move, "max", flag, 4, float("-inf"), float("inf"))
+		[_, best_move] = self.minimax(board, old_move, "max", flag, 3, float("-inf"), float("inf"))
 		return best_move
 
 		# return cells[random.randrange(len(cells))]
