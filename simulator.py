@@ -36,13 +36,17 @@ class Random_Player():
 		cells = board.find_valid_move_cells(old_move)
 
 		# ADD HEURISTIC CHECKING HERE - CHANGE THIS LATER
+
+		heuristic_score = 0
+		result = board.find_terminal_state()
+		if result[1]=='WON':
+			heuristic_score = 500 if (result[0]==flag) else float("-inf")
+			return [heuristic_score, None]
+		elif result[1]=='DRAW':
+			heuristic_score = 30
+			return [heuristic_score, None]
+
 		if depth==0:
-			heuristic_score = 0
-			result = board.find_terminal_state()
-			if result[1]=='WON':
-				heuristic_score = 500 if (player=="max") else float("-inf")
-			elif result[1]=='DRAW':
-				heuristic_score = 30
 			return [heuristic_score, None] #[Score, Move]
 		
 		# Check for further error handling - what to return if lost
