@@ -47,7 +47,7 @@ class Random_Player():
 			check += 1
 			# big_board[move[0]][move[1]][move[2]] = flag
 			board.update(old_move, move, flag)
-			score = minimax(self, move, "min" if (player=="max") else "max", 'o' if (flag=='x') else 'x', depth-1)
+			score = minimax(self, board, move, "min" if (player=="max") else "max", 'o' if (flag=='x') else 'x', depth-1)
 			if player=="max":
 				if check==1 or score > best_score:
 					best_score = score
@@ -62,9 +62,6 @@ class Random_Player():
 		return [best_score, best_move]
 
 	def move(self, board, old_move, flag):
-		#You have to implement the move function with the same signature as this
-		#Find the list of valid cells allowed
-
 		# TAKE CARE OF CASE WHEN EVERYTHING  IS ALLOWED IN THE BEGINNING
 		# ADD ITERATIVE DEEPENING TO HANDLE IN CASE OF TIME EXCEEDANCE
 		[_, best_move] = self.minimax(board, old_move, "max", flag, 2)
