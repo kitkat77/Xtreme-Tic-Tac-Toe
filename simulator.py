@@ -31,7 +31,7 @@ class Random_Player():
 	def __init__(self):
 		pass
 
-	def minimax(self, board, old_move, player, flag, depth):
+	def minimax(self, board, old_move, player, flag, depth, alpha, beta):
 		
 		cells = board.find_valid_move_cells(old_move)
 
@@ -39,31 +39,30 @@ class Random_Player():
 		if depth==0:
 			return [0, None] #[Score, Move]
 		
-		best_score = -1
 		best_move = (-1, -1, -1)
-		check = 0
 
 		for move in cells:
-			check += 1
 			board.update(old_move, move, flag)
-			[score, _] = self.minimax(board, move, "min" if (player=="max") else "max", 'o' if (flag=='x') else 'x', depth-1)
+			[score, _] = self.minimax(board, move, "min" if (player=="max") else "max", 'o' if (flag=='x') else 'x', depth-1, alpha, beta)
 			if player=="max":
-				if check==1 or score > best_score:
-					best_score = score
+				if score > alpha:
+					alpha = score
 					best_move = move
 			else:
-				if check==1 or score < best_score:
-					best_score = score
+				if score < beta:
+					beta = score
 					best_move = move
 			board.big_boards_status[move[0]][move[1]][move[2]] = '-'
 			board.small_boards_status[move[0]][move[1]/3][move[2]/3] = '-'
+			if alpha >= beta:
+				break
 
-		return [best_score, best_move]
+		return [alpha if (player=="max") else beta, best_move]
 
 	def move(self, board, old_move, flag):
 		# TAKE CARE OF CASE WHEN EVERYTHING  IS ALLOWED IN THE BEGINNING
 		# ADD ITERATIVE DEEPENING TO HANDLE IN CASE OF TIME EXCEEDANCE
-		[_, best_move] = self.minimax(board, old_move, "max", flag, 2)
+		[_, best_move] = self.minimax(board, old_move, "max", flag, 2, float("-inf"), float("inf"))
 		return best_move
 
 		# return cells[random.randrange(len(cells))]
