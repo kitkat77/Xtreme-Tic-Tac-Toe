@@ -45,8 +45,8 @@ class Random_Player():
 				heuristic_score = 30
 			return [heuristic_score, None] #[Score, Move]
 		
-		# TAKE CARE WHEN THIS LENGTH BECOMES EQUAL TO ZERO
-		best_move = cells[0]
+		# Check for further error handling - what to return if lost
+		best_move = (-1, -1, -1) if len(cells)==0 else cells[0]
 
 		for move in cells:
 			board.update(old_move, move, flag)
