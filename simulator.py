@@ -35,9 +35,15 @@ class Random_Player():
 		
 		cells = board.find_valid_move_cells(old_move)
 
-		# ADD HEURISTIC CHECKING HERE
+		# ADD HEURISTIC CHECKING HERE - CHANGE THIS LATER
 		if depth==0:
-			return [0, None] #[Score, Move]
+			heuristic_score = 0
+			result = board.find_terminal_state()
+			if result[1]=='WON':
+				heuristic_score = 500 if (player=="max") else float("-inf")
+			elif result[1]=='DRAW':
+				heuristic_score = 30
+			return [heuristic_score, None] #[Score, Move]
 		
 		best_move = (-1, -1, -1)
 
@@ -62,7 +68,7 @@ class Random_Player():
 	def move(self, board, old_move, flag):
 		# TAKE CARE OF CASE WHEN EVERYTHING  IS ALLOWED IN THE BEGINNING
 		# ADD ITERATIVE DEEPENING TO HANDLE IN CASE OF TIME EXCEEDANCE
-		[_, best_move] = self.minimax(board, old_move, "max", flag, 2, float("-inf"), float("inf"))
+		[_, best_move] = self.minimax(board, old_move, "max", flag, 4, float("-inf"), float("inf"))
 		return best_move
 
 		# return cells[random.randrange(len(cells))]
