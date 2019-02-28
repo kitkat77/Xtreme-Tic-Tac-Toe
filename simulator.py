@@ -45,9 +45,8 @@ class Random_Player():
 
 		for move in cells:
 			check += 1
-			# big_board[move[0]][move[1]][move[2]] = flag
 			board.update(old_move, move, flag)
-			score = minimax(self, board, move, "min" if (player=="max") else "max", 'o' if (flag=='x') else 'x', depth-1)
+			[score, _] = self.minimax(board, move, "min" if (player=="max") else "max", 'o' if (flag=='x') else 'x', depth-1)
 			if player=="max":
 				if check==1 or score > best_score:
 					best_score = score
@@ -56,8 +55,8 @@ class Random_Player():
 				if check==1 or score < best_score:
 					best_score = score
 					best_move = move
-			# HOW DO I UNDO THIS AAAARGH
-			big_board[int(mvp[0])][int(mvp[1])][int(mvp[2])] = '-'
+			board.big_boards_status[move[0]][move[1]][move[2]] = '-'
+			board.small_boards_status[move[0]][move[1]/3][move[2]/3] = '-'
 
 		return [best_score, best_move]
 
