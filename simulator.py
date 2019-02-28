@@ -27,6 +27,16 @@ def handler(signum, frame):
 	#print 'Signal handler called with signal', signum
 	raise TimedOutExc()
 
+class TotalRandom_Player():
+	def __init__(self):
+		pass
+
+	def move(self, board, old_move, flag):
+		#You have to implement the move function with the same signature as this
+		#Find the list of valid cells allowed
+		cells = board.find_valid_move_cells(old_move)
+		return cells[random.randrange(len(cells))]
+
 class Random_Player():
 	def __init__(self):
 		pass
@@ -398,6 +408,7 @@ if __name__ == '__main__':
 		print '<option> can be 1 => Random player vs. Random player'
 		print '                2 => Human vs. Random Player'
 		print '                3 => Human vs. Human'
+		print '                4 => Random vs. TotalRandom'
 		sys.exit(1)
  
 	obj1 = ''
@@ -407,6 +418,9 @@ if __name__ == '__main__':
 		obj1 = Random_Player()
 		obj2 = Random_Player()
 
+	elif option == '4':
+		obj1 = Random_Player()
+		obj2 = TotalRandom_Player()
 	elif option == '2':
 		obj1 = Random_Player()
 		obj2 = Manual_Player()
