@@ -34,6 +34,7 @@ class Random_Player():
 	def minimax(self, board, old_move, player, flag, depth, alpha, beta):
 		
 		cells = board.find_valid_move_cells(old_move)
+		random.shuffle(cells)
 
 		# ADD HEURISTIC CHECKING HERE - CHANGE THIS LATER
 
