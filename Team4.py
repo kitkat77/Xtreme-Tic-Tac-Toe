@@ -176,13 +176,13 @@ class Random_Player():
 
 		result = board.find_terminal_state()
 		if result[1]=='WON':
-			return [500 if (result[0]==flag) else float("-inf"), None]
+			return [float("inf") if (result[0]==flag) else float("-inf"), None]
 		elif result[1]=='DRAW':
-			return [30, None]
+			return [2, None]
 
 		if depth==0:
 			heuristic_score = self.heuristic(board,flag)
-			return [0, None] #[Score, Move]
+			return [heuristic_score, None] #[Score, Move]
 		
 		# Check for further error handling - what to return if lost
 		best_move = (-1, -1, -1) if len(cells)==0 else cells[0]
