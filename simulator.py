@@ -48,17 +48,14 @@ class Random_Player():
 
 		# ADD HEURISTIC CHECKING HERE - CHANGE THIS LATER
 
-		heuristic_score = 0
 		result = board.find_terminal_state()
 		if result[1]=='WON':
-			heuristic_score = 500 if (result[0]==flag) else float("-inf")
-			return [heuristic_score, None]
+			return [500 if (result[0]==flag) else float("-inf"), None]
 		elif result[1]=='DRAW':
-			heuristic_score = 30
-			return [heuristic_score, None]
+			return [30, None]
 
 		if depth==0:
-			return [heuristic_score, None] #[Score, Move]
+			return [0, None] #[Score, Move]
 		
 		# Check for further error handling - what to return if lost
 		best_move = (-1, -1, -1) if len(cells)==0 else cells[0]
@@ -68,12 +65,10 @@ class Random_Player():
 			[score, _] = self.minimax(board, move, "min" if (player=="max") else "max", 'o' if (flag=='x') else 'x', depth-1, alpha, beta)
 			if player=="max":
 				if score > alpha:
-					alpha = score
-					best_move = move
+					alpha, best_move = score, move
 			else:
 				if score < beta:
-					beta = score
-					best_move = move
+					beta, best_move = score, move
 			board.big_boards_status[move[0]][move[1]][move[2]] = '-'
 			board.small_boards_status[move[0]][move[1]/3][move[2]/3] = '-'
 			if alpha >= beta:
@@ -417,16 +412,15 @@ if __name__ == '__main__':
 	if option == '1':
 		obj1 = Random_Player()
 		obj2 = Random_Player()
-
-	elif option == '4':
-		obj1 = Random_Player()
-		obj2 = TotalRandom_Player()
 	elif option == '2':
 		obj1 = Random_Player()
 		obj2 = Manual_Player()
 	elif option == '3':
 		obj1 = Manual_Player()
 		obj2 = Manual_Player()
+	elif option == '4':
+		obj1 = Random_Player()
+		obj2 = TotalRandom_Player()
 	else:
 		print 'Invalid option'
 		sys.exit(1)
