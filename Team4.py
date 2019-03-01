@@ -232,10 +232,12 @@ class Random_Player():
 		self.move_start_time = time.time()
 
 		depth = 1
+		move = (-1, -1, -1)
 		best_move = (-1, -1, -1)
 
 		while time.time() - self.move_start_time < self.max_time:
-			[_, best_move] = self.minimax(board, old_move, "max", flag, depth, float("-inf"), float("inf"),0)
+			best_move = move
+			[_, move] = self.minimax(board, old_move, "max", flag, depth, float("-inf"), float("inf"), 0)
 			depth += 1
 			print depth
 		
