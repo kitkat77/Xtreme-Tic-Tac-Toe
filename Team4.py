@@ -158,11 +158,11 @@ class Random_Player():
 		
 		big_board_weight = self.cells_big_board(board,flag) - self.cells_big_board(board,other_flag)
 		
-		final += score_heuristic
-		final += 4 * almost_line_score_small
-		final += 8 * almost_line_score_big
-		final += 2 * small_boards_weight
-		final += 4 * big_board_weight
+		final += 2 * score_heuristic
+		final += 7 * almost_line_score_small
+		final += 15 * almost_line_score_big
+		final += 10 * small_boards_weight
+		final += 50 * big_board_weight
 
 
 		return final
@@ -205,5 +205,5 @@ class Random_Player():
 	def move(self, board, old_move, flag):
 		# TAKE CARE OF CASE WHEN EVERYTHING  IS ALLOWED IN THE BEGINNING
 		# ADD ITERATIVE DEEPENING TO HANDLE IN CASE OF TIME EXCEEDANCE
-		[_, best_move] = self.minimax(board, old_move, "max", flag, 4, float("-inf"), float("inf"))
+		[_, best_move] = self.minimax(board, old_move, "max", flag, 5, float("-inf"), float("inf"))
 		return best_move
