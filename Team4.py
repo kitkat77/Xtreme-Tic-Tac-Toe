@@ -8,7 +8,7 @@ import traceback
 
 class Random_Player():
 	def __init__(self):
-		self.max_time = 20
+		self.max_time = 5
 		self.move_start_time = time.time()
 		pass
 
@@ -159,7 +159,7 @@ class Random_Player():
 
 	# returns heuristic for board if flag is the symbol of the player
 	def heuristic(self,board,flag):
-		other_flag = 'x' if flag=='o' else 'x'
+		other_flag = 'x' if flag=='o' else 'o'
 		final = 0
 		
 		score_heuristic = self.current_score(board,flag) - self.current_score(board,other_flag)
@@ -235,7 +235,7 @@ class Random_Player():
 		best_move = (-1, -1, -1)
 
 		while time.time() - self.move_start_time < self.max_time:
-			[_, best_move] = self.minimax(board, old_move, "max", flag, 4, float("-inf"), float("inf"),0)
+			[_, best_move] = self.minimax(board, old_move, "max", flag, depth, float("-inf"), float("inf"),0)
 			depth += 1
 			print depth
 		
