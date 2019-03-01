@@ -65,7 +65,7 @@ class Random_Player():
 
 
 	# finds number of 2-in-a-line in board for flag for small boards that haven't won yet
-	def almost_line_big_board(self,board,flag):
+	def almost_line_small_boards(self,board,flag):
 		counter = 0
 		for t in range(2):
 			bbs = board.big_boards_status[t]
@@ -87,14 +87,85 @@ class Random_Player():
 					counter += self.almost_diagonal(cur_board,flag)
 		return counter
 
+	# returns number of 2-in-a-line and 3rd empty for small boards as cells
+	def almost_line_big_board(self,board,flag):
+		counter = 0
+		for t in range(2):
+			cur_board = board.small_boards_status[t]
+			counter += self.almost_row(cur_board,flag)
+			counter += self.almost_column(cur_board,flag)
+			counter += self.almost_diagonal(cur_board,flag)
+		return counter
+
+
+	# returns weight of a 3x3 board for flag ARBITRARILY DECIDED
+	def weighted_cells(self,board,flag):
+		total = 0
+		#corner weight
+		cor = 1
+		# center weight
+		cen = 2
+		# other weight
+		oth = 0
+		w = [[cor,oth,cor],[oth,cen,oth],[cor,oth,cor]]
+		for i in range(3):
+			for j in range(3):
+				if board[i][j] == flag:
+					total += w[i][j]
+		return total
+
+
+	def cells_small_boards(self,board,flag):
+		counter = 0
+		for t in range(2):
+			bbs = board.big_boards_status[t]
+			sbs = board.small_boards_status[t]
+			for i in range(0,9,3):
+				for j in range(0,9,3):
+				# considering each small board
+					# consider only small boards which aren't won
+					if sbs[i/3][j/3] != '-':
+						continue
+					cur_board = []
+					for p in range(3):
+						cur_row = []
+						for q in range(3):
+							cur_row.append(bbs[i+p][j+q])
+						cur_board.append(cur_row)
+					counter += self.weighted_cells(cur_board,flag)
+		return counter
+
+	def cells_big_board(self,board,flag):
+		counter = 0
+		for t in range(2):
+			cur_board = board.small_boards_status[t]
+			counter += self.weighted_cells(cur_board,flag)
+		return counter
 
 
 	# returns heuristic for board if flag is the symbol of the player
 	def heuristic(self,board,flag):
 		other_flag = 'x' if flag=='o' else 'x'
+		final = 0
+		
 		score_heuristic = self.current_score(board,flag) - self.current_score(board,other_flag)
-		almost_line_score = self.almost_line_big_board(board,flag) - self.almost_line_big_board(board,other_flag)
-		return score_heuristic + almost_line_score
+		
+		almost_line_score_small = self.almost_line_small_boards(board,flag) - self.almost_line_small_boards(board,other_flag)
+		
+		almost_line_score_big = self.almost_line_big_board(board,flag) - self.almost_line_big_board(board,other_flag)
+		
+		small_boards_weight = self.cells_small_boards(board,flag) - self.cells_small_boards(board,other_flag)
+		
+		big_board_weight = self.cells_big_board(board,flag) - self.cells_big_board(board,other_flag)
+		
+		final += score_heuristic
+		final += 4 * almost_line_score_small
+		final += 8 * almost_line_score_big
+		final += 2 * small_boards_weight
+		final += 4 * big_board_weight
+
+
+		return final
 
 	def minimax(self, board, old_move, player, flag, depth, alpha, beta):
 		
@@ -111,7 +182,6 @@ class Random_Player():
 
 		if depth==0:
 			heuristic_score = self.heuristic(board,flag)
-			#print(h)
 			return [0, None] #[Score, Move]
 		
 		# Check for further error handling - what to return if lost
