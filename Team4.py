@@ -114,11 +114,11 @@ class Random_Player():
 	def weighted_cells(self,board,flag):
 		total = 0
 		#corner weight
-		cor = 3
+		cor = 4
 		# center weight
-		cen = 5
+		cen = 6
 		# other weight
-		oth = 1
+		oth = 3
 		w = [[cor,oth,cor],[oth,cen,oth],[cor,oth,cor]]
 		for i in range(3):
 			for j in range(3):
@@ -171,10 +171,10 @@ class Random_Player():
 		big_board_weight = self.cells_big_board(board,flag) - 0.8*self.cells_big_board(board,other_flag)
 		
 		#final += 0.5 * score_heuristic
-		final += 20 * almost_line_score_small
+		final += 10 * almost_line_score_small
 		final += 40 * almost_line_score_big
 		final += 8 * small_boards_weight
-		final += 70 * big_board_weight
+		final += 50 * big_board_weight
 
 
 		return final
@@ -203,18 +203,16 @@ class Random_Player():
 		for move in cells:
 			next_player = "min" if player == "max" else "max"
 			next_bonus = 0
+			next_flag =  'o' if (flag=='x') else 'x'
 			save_board = copy.deepcopy(board)	
 			board.update(old_move, move, flag)
 			if bonus == 0:
 				player_change = self.small_board_change(save_board,board)
 				if player_change == 1:
 					next_bonus = 1
-					print "WON"
-					if next_player == "min":
-						next_player = "max"
-					else:
-						next_player = "min"
-			[score, _] = self.minimax(board, move, next_player, 'o' if (flag=='x') else 'x', depth-1, alpha, beta, next_bonus)
+					next_player = player
+					next_flag = flag
+			[score, _] = self.minimax(board, move, next_player,next_flag, depth-1, alpha, beta, next_bonus)
 			if player=="max":
 				if score > alpha:
 					alpha, best_move = score, move
@@ -232,5 +230,6 @@ class Random_Player():
 		# TAKE CARE OF CASE WHEN EVERYTHING  IS ALLOWED IN THE BEGINNING
 		# ADD ITERATIVE DEEPENING TO HANDLE IN CASE OF TIME EXCEEDANCE
 		save_move = (-1,-1,-1)
+
 		[_, best_move] = self.minimax(board, old_move, "max", flag, 4, float("-inf"), float("inf"),0)
 		return best_move
