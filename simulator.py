@@ -1,4 +1,5 @@
 from Team4 import *
+from player_final import *
 
 ''' 
 
@@ -357,7 +358,7 @@ if __name__ == '__main__':
 	if len(sys.argv) != 2:
 		print 'Usage: python simulator.py <option>'
 		print '<option> can be 1 => Random player vs. Random player'
-		print '                2 => Human vs. Random Player'
+		print '                2 => Puru vs. Random Player'
 		print '                3 => Human vs. Human'
 		print '                4 => Random vs. TotalRandom'
 		sys.exit(1)
@@ -369,8 +370,8 @@ if __name__ == '__main__':
 		obj1 = Random_Player()
 		obj2 = Random_Player()
 	elif option == '2':
-		obj1 = Random_Player()
-		obj2 = Manual_Player()
+		obj1 = Player_final(1)
+		obj2 = Random_Player()
 	elif option == '3':
 		obj1 = Manual_Player()
 		obj2 = Manual_Player()

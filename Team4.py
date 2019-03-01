@@ -114,11 +114,11 @@ class Random_Player():
 	def weighted_cells(self,board,flag):
 		total = 0
 		#corner weight
-		cor = 1
+		cor = 3
 		# center weight
-		cen = 2
+		cen = 5
 		# other weight
-		oth = 0
+		oth = 1
 		w = [[cor,oth,cor],[oth,cen,oth],[cor,oth,cor]]
 		for i in range(3):
 			for j in range(3):
@@ -168,13 +168,13 @@ class Random_Player():
 		
 		small_boards_weight = self.cells_small_boards(board,flag) - self.cells_small_boards(board,other_flag)
 		
-		big_board_weight = self.cells_big_board(board,flag) - 1*self.cells_big_board(board,other_flag)
+		big_board_weight = self.cells_big_board(board,flag) - 0.8*self.cells_big_board(board,other_flag)
 		
-		final += 2 * score_heuristic
-		final += 7 * almost_line_score_small
-		final += 15 * almost_line_score_big
-		final += 10 * small_boards_weight
-		final += 50 * big_board_weight
+		#final += 0.5 * score_heuristic
+		final += 20 * almost_line_score_small
+		final += 40 * almost_line_score_big
+		final += 8 * small_boards_weight
+		final += 70 * big_board_weight
 
 
 		return final
@@ -231,5 +231,6 @@ class Random_Player():
 	def move(self, board, old_move, flag):
 		# TAKE CARE OF CASE WHEN EVERYTHING  IS ALLOWED IN THE BEGINNING
 		# ADD ITERATIVE DEEPENING TO HANDLE IN CASE OF TIME EXCEEDANCE
+		save_move = (-1,-1,-1)
 		[_, best_move] = self.minimax(board, old_move, "max", flag, 4, float("-inf"), float("inf"),0)
 		return best_move
