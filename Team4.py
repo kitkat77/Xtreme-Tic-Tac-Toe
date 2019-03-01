@@ -170,7 +170,6 @@ class Random_Player():
 	def minimax(self, board, old_move, player, flag, depth, alpha, beta):
 		
 		cells = board.find_valid_move_cells(old_move)
-		random.shuffle(cells)
 
 		# ADD HEURISTIC CHECKING HERE - CHANGE THIS LATER
 
@@ -206,7 +205,5 @@ class Random_Player():
 	def move(self, board, old_move, flag):
 		# TAKE CARE OF CASE WHEN EVERYTHING  IS ALLOWED IN THE BEGINNING
 		# ADD ITERATIVE DEEPENING TO HANDLE IN CASE OF TIME EXCEEDANCE
-		[_, best_move] = self.minimax(board, old_move, "max", flag, 3, float("-inf"), float("inf"))
+		[_, best_move] = self.minimax(board, old_move, "max", flag, 4, float("-inf"), float("inf"))
 		return best_move
-
-		# return cells[random.randrange(len(cells))]
