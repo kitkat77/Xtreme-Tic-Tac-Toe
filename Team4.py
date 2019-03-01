@@ -8,6 +8,8 @@ import traceback
 
 class Random_Player():
 	def __init__(self):
+		self.max_time = 20
+		self.move_start_time = time.time()
 		pass
 
 
@@ -184,15 +186,13 @@ class Random_Player():
 		cells = board.find_valid_move_cells(old_move)
 		random.shuffle(cells)
 		
-		# ADD HEURISTIC CHECKING HERE - CHANGE THIS LATER
-
 		result = board.find_terminal_state()
 		if result[1]=='WON':
 			return [float("inf") if (result[0]==flag) else float("-inf"), None]
 		elif result[1]=='DRAW':
 			return [2, None]
 
-		if depth==0:
+		if depth==0 or time.time()-self.move_start_time >= self.max_time:
 			heuristic_score = self.heuristic(board,flag)
 			return [heuristic_score, None] #[Score, Move]
 		
@@ -227,9 +227,16 @@ class Random_Player():
 		return [alpha if (player=="max") else beta, best_move]
 
 	def move(self, board, old_move, flag):
-		# TAKE CARE OF CASE WHEN EVERYTHING  IS ALLOWED IN THE BEGINNING
-		# ADD ITERATIVE DEEPENING TO HANDLE IN CASE OF TIME EXCEEDANCE
-		save_move = (-1,-1,-1)
+		# TAKE CARE OF CASE WHEN EVERYTHING IS ALLOWED IN THE BEGINNING
 
-		[_, best_move] = self.minimax(board, old_move, "max", flag, 4, float("-inf"), float("inf"),0)
+		self.move_start_time = time.time()
+
+		depth = 1
+		best_move = (-1, -1, -1)
+
+		while time.time() - self.move_start_time < self.max_time:
+			[_, best_move] = self.minimax(board, old_move, "max", flag, 4, float("-inf"), float("inf"),0)
+			depth += 1
+			print depth
+		
 		return best_move
