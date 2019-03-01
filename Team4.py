@@ -156,7 +156,7 @@ class Random_Player():
 		
 		small_boards_weight = self.cells_small_boards(board,flag) - self.cells_small_boards(board,other_flag)
 		
-		big_board_weight = self.cells_big_board(board,flag) - self.cells_big_board(board,other_flag)
+		big_board_weight = self.cells_big_board(board,flag) - 0.8*self.cells_big_board(board,other_flag)
 		
 		final += 2 * score_heuristic
 		final += 7 * almost_line_score_small
@@ -170,7 +170,8 @@ class Random_Player():
 	def minimax(self, board, old_move, player, flag, depth, alpha, beta):
 		
 		cells = board.find_valid_move_cells(old_move)
-
+		random.shuffle(cells)
+		
 		# ADD HEURISTIC CHECKING HERE - CHANGE THIS LATER
 
 		result = board.find_terminal_state()
@@ -205,5 +206,5 @@ class Random_Player():
 	def move(self, board, old_move, flag):
 		# TAKE CARE OF CASE WHEN EVERYTHING  IS ALLOWED IN THE BEGINNING
 		# ADD ITERATIVE DEEPENING TO HANDLE IN CASE OF TIME EXCEEDANCE
-		[_, best_move] = self.minimax(board, old_move, "max", flag, 5, float("-inf"), float("inf"))
+		[_, best_move] = self.minimax(board, old_move, "max", flag, 4, float("-inf"), float("inf"))
 		return best_move
