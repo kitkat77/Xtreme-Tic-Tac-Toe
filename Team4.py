@@ -28,7 +28,7 @@ class Random_Player():
 	# returns score in board for player 'flag'
 	def current_score(self,board,flag):
 		current_score = 0
-		scheme = [[4,6,4],[6,3,6],[4,6,4]]
+		scheme = [[6,4,6],[4,10,4],[6,4,6]]
 		for i in range(2):
 			for j in range(3):
 				for k in range(3):
@@ -82,8 +82,8 @@ class Random_Player():
 	def almost_line_small_boards(self,board,flag):
 		counter = 0
 		for t in range(2):
-			bbs = board.big_boards_status[t]
-			sbs = board.small_boards_status[t]
+			bbs = copy.deepcopy(board.big_boards_status[t])
+			sbs = copy.deepcopy(board.small_boards_status[t])
 			for i in range(0,9,3):
 				for j in range(0,9,3):
 				# considering each small board
@@ -132,8 +132,8 @@ class Random_Player():
 	def cells_small_boards(self,board,flag):
 		counter = 0
 		for t in range(2):
-			bbs = board.big_boards_status[t]
-			sbs = board.small_boards_status[t]
+			bbs = copy.deepcopy(board.big_boards_status[t])
+			sbs = copy.deepcopy(board.small_boards_status[t])
 			for i in range(0,9,3):
 				for j in range(0,9,3):
 				# considering each small board
@@ -152,31 +152,32 @@ class Random_Player():
 	def cells_big_board(self,board,flag):
 		counter = 0
 		for t in range(2):
-			cur_board = board.small_boards_status[t]
+			cur_board = copy.deepcopy(board.small_boards_status[t])
 			counter += self.weighted_cells(cur_board,flag)
 		return counter
 
 
 	# returns heuristic for board if flag is the symbol of the player
 	def heuristic(self,board,flag):
+		
 		other_flag = 'x' if flag=='o' else 'o'
 		final = 0
 		
 		score_heuristic = self.current_score(board,flag) - self.current_score(board,other_flag)
 		
-		almost_line_score_small = self.almost_line_small_boards(board,flag) - self.almost_line_small_boards(board,other_flag)
+		almost_line_score_small = self.almost_line_small_boards(board,flag) - 0.9*self.almost_line_small_boards(board,other_flag)
 		
 		almost_line_score_big = self.almost_line_big_board(board,flag) - self.almost_line_big_board(board,other_flag)
 		
 		small_boards_weight = self.cells_small_boards(board,flag) - self.cells_small_boards(board,other_flag)
 		
-		big_board_weight = self.cells_big_board(board,flag) - 0.8*self.cells_big_board(board,other_flag)
+		big_board_weight = self.cells_big_board(board,flag) - self.cells_big_board(board,other_flag)
 		
 		#final += 0.5 * score_heuristic
-		final += 10 * almost_line_score_small
-		final += 40 * almost_line_score_big
-		final += 8 * small_boards_weight
-		final += 50 * big_board_weight
+		final += 10 * almost_line_score_small 
+		final += 300 * almost_line_score_big
+		final += 2 * small_boards_weight
+		final += 15 * big_board_weight
 
 
 		return final
@@ -188,11 +189,11 @@ class Random_Player():
 		
 		result = board.find_terminal_state()
 		if result[1]=='WON':
-			return [float("inf") if (result[0]==flag) else float("-inf"), None]
+			return [1000000000  if (result[0]==flag and player=="max") else -1000000000, None]
 		elif result[1]=='DRAW':
 			return [2, None]
 
-		if depth==0 or time.time()-self.move_start_time >= self.max_time:
+		if depth==0 or time.time() - self.move_start_time >= self.max_time:
 			heuristic_score = self.heuristic(board,flag)
 			return [heuristic_score, None] #[Score, Move]
 		
@@ -213,6 +214,8 @@ class Random_Player():
 					next_player = player
 					next_flag = flag
 			[score, _] = self.minimax(board, move, next_player,next_flag, depth-1, alpha, beta, next_bonus)
+			if score == "stop":
+				return ["stop",(-1,-1,-1)]
 			if player=="max":
 				if score > alpha:
 					alpha, best_move = score, move
@@ -221,7 +224,7 @@ class Random_Player():
 					beta, best_move = score, move
 			board.big_boards_status[move[0]][move[1]][move[2]] = '-'
 			board.small_boards_status[move[0]][move[1]/3][move[2]/3] = '-'
-			if alpha >= beta:
+			if alpha >= beta or time.time() - self.move_start_time >= self.max_time:
 				break
 
 		return [alpha if (player=="max") else beta, best_move]
@@ -241,4 +244,6 @@ class Random_Player():
 			depth += 1
 			print depth
 		
+		# [_, best_move] = self.minimax(board, old_move, "max", flag, 4, float("-inf"), float("inf"), 0)
+
 		return best_move
