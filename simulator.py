@@ -1,3 +1,5 @@
+from Team4 import *
+
 ''' 
 
 Naming convention followed across the simulator is:
@@ -37,52 +39,6 @@ class TotalRandom_Player():
 		cells = board.find_valid_move_cells(old_move)
 		return cells[random.randrange(len(cells))]
 
-class Random_Player():
-	def __init__(self):
-		pass
-
-	def minimax(self, board, old_move, player, flag, depth, alpha, beta):
-		
-		cells = board.find_valid_move_cells(old_move)
-		random.shuffle(cells)
-
-		# ADD HEURISTIC CHECKING HERE - CHANGE THIS LATER
-
-		result = board.find_terminal_state()
-		if result[1]=='WON':
-			return [500 if (result[0]==flag) else float("-inf"), None]
-		elif result[1]=='DRAW':
-			return [30, None]
-
-		if depth==0:
-			return [0, None] #[Score, Move]
-		
-		# Check for further error handling - what to return if lost
-		best_move = (-1, -1, -1) if len(cells)==0 else cells[0]
-
-		for move in cells:
-			board.update(old_move, move, flag)
-			[score, _] = self.minimax(board, move, "min" if (player=="max") else "max", 'o' if (flag=='x') else 'x', depth-1, alpha, beta)
-			if player=="max":
-				if score > alpha:
-					alpha, best_move = score, move
-			else:
-				if score < beta:
-					beta, best_move = score, move
-			board.big_boards_status[move[0]][move[1]][move[2]] = '-'
-			board.small_boards_status[move[0]][move[1]/3][move[2]/3] = '-'
-			if alpha >= beta:
-				break
-
-		return [alpha if (player=="max") else beta, best_move]
-
-	def move(self, board, old_move, flag):
-		# TAKE CARE OF CASE WHEN EVERYTHING  IS ALLOWED IN THE BEGINNING
-		# ADD ITERATIVE DEEPENING TO HANDLE IN CASE OF TIME EXCEEDANCE
-		[_, best_move] = self.minimax(board, old_move, "max", flag, 3, float("-inf"), float("inf"))
-		return best_move
-
-		# return cells[random.randrange(len(cells))]
 
 class Manual_Player:
 	def __init__(self):
