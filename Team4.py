@@ -11,6 +11,18 @@ class Random_Player():
 		pass
 
 
+	def small_board_change(self,board1,board2):
+		for t in range(2):
+			a = board1.small_boards_status[t]
+			b = board1.small_boards_status[t]
+			for i in range(3):
+				for j in range(3):
+					if a[i][j] != b[i][j]:
+						return 1
+
+		return 0
+
+
 	# returns score in board for player 'flag'
 	def current_score(self,board,flag):
 		current_score = 0
@@ -156,7 +168,7 @@ class Random_Player():
 		
 		small_boards_weight = self.cells_small_boards(board,flag) - self.cells_small_boards(board,other_flag)
 		
-		big_board_weight = self.cells_big_board(board,flag) - 0.8*self.cells_big_board(board,other_flag)
+		big_board_weight = self.cells_big_board(board,flag) - 1*self.cells_big_board(board,other_flag)
 		
 		final += 2 * score_heuristic
 		final += 7 * almost_line_score_small
@@ -167,7 +179,7 @@ class Random_Player():
 
 		return final
 
-	def minimax(self, board, old_move, player, flag, depth, alpha, beta):
+	def minimax(self, board, old_move, player, flag, depth, alpha, beta, bonus):
 		
 		cells = board.find_valid_move_cells(old_move)
 		random.shuffle(cells)
@@ -187,9 +199,22 @@ class Random_Player():
 		# Check for further error handling - what to return if lost
 		best_move = (-1, -1, -1) if len(cells)==0 else cells[0]
 
+		next_bonus = 0
 		for move in cells:
+			next_player = "min" if player == "max" else "max"
+			next_bonus = 0
+			save_board = copy.deepcopy(board)	
 			board.update(old_move, move, flag)
-			[score, _] = self.minimax(board, move, "min" if (player=="max") else "max", 'o' if (flag=='x') else 'x', depth-1, alpha, beta)
+			if bonus == 0:
+				player_change = self.small_board_change(save_board,board)
+				if player_change == 1:
+					next_bonus = 1
+					print "WON"
+					if next_player == "min":
+						next_player = "max"
+					else:
+						next_player = "min"
+			[score, _] = self.minimax(board, move, next_player, 'o' if (flag=='x') else 'x', depth-1, alpha, beta, next_bonus)
 			if player=="max":
 				if score > alpha:
 					alpha, best_move = score, move
@@ -206,5 +231,5 @@ class Random_Player():
 	def move(self, board, old_move, flag):
 		# TAKE CARE OF CASE WHEN EVERYTHING  IS ALLOWED IN THE BEGINNING
 		# ADD ITERATIVE DEEPENING TO HANDLE IN CASE OF TIME EXCEEDANCE
-		[_, best_move] = self.minimax(board, old_move, "max", flag, 4, float("-inf"), float("inf"))
+		[_, best_move] = self.minimax(board, old_move, "max", flag, 4, float("-inf"), float("inf"),0)
 		return best_move
