@@ -17,7 +17,7 @@ class Random_Player_Old():
 	def small_board_change(self,board1,board2):
 		for t in range(2):
 			a = board1.small_boards_status[t]
-			b = board1.small_boards_status[t]
+			b = board2.small_boards_status[t]
 			for i in range(3):
 				for j in range(3):
 					if a[i][j] != b[i][j]:
