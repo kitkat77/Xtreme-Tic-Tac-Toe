@@ -184,7 +184,7 @@ class Random_Player_Old():
 
 	def minimax(self, board, old_move, player, flag, depth, alpha, beta, bonus):
 		cells = board.find_valid_move_cells(old_move)
-		random.shuffle(cells)
+		# random.shuffle(cells)
 		
 		result = board.find_terminal_state()
 		if result[1]=='WON' and player == "max":
@@ -193,12 +193,13 @@ class Random_Player_Old():
 			return [-100000000000 if (result[0]==flag) else 100000000000, None, depth]
 
 		elif result[1]=='DRAW':
-			return [2, None]
+			return [2, None, depth]
 
 		if depth==0:
 			heuristic_score = self.heuristic(board,flag)
-			#if player == "min":
-			#	heuristic_score *= -1
+			if player == "min":
+				heuristic_score *= -1
+			print heuristic_score
 			return [heuristic_score, None, depth] #[Score, Move]
 		
 		#if time.time()-self.move_start_time >= self.max_time:
@@ -227,16 +228,16 @@ class Random_Player_Old():
 				if score > alpha:
 					alpha, best_move = score, move
 					save_depth = cur_depth
-				elif score == self.win_score and cur_depth < save_depth:
+				elif score == self.win_score and cur_depth > save_depth:
 					best_move = move
 					save_depth = cur_depth
 			else:
 				if score < beta:
 					beta, best_move = score, move
 					save_depth = cur_depth
-				#elif score == -self.win_score and cur_depth < save_depth:
-				#	best_move = move
-				#	save_depth = cur_depth
+				elif score == -self.win_score and cur_depth > save_depth:
+					best_move = move
+					save_depth = cur_depth
 			board.big_boards_status[move[0]][move[1]][move[2]] = '-'
 			board.small_boards_status[move[0]][move[1]/3][move[2]/3] = '-'
 			if alpha >= beta:
