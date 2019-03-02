@@ -1,5 +1,7 @@
 from Team4 import *
-from player_final import *
+from puru import *
+from anshita import *
+from vaibhav import *
 
 ''' 
 
@@ -358,26 +360,30 @@ if __name__ == '__main__':
 	if len(sys.argv) != 2:
 		print 'Usage: python simulator.py <option>'
 		print '<option> can be 1 => Random player vs. Random player'
-		print '                2 => Puru vs. Random Player'
-		print '                3 => Human vs. Human'
-		print '                4 => Random vs. TotalRandom'
+		print '                2 => Puru vs. Random_old'
+		print '                3 => Random_old vs. Random'
+		print '                4 => Random_old vs. TotalRandom'
+		print '                5 => Vaibhav vs. Random_old'
 		sys.exit(1)
  
 	obj1 = ''
 	obj2 = ''
 	option = sys.argv[1]	
 	if option == '1':
-		obj1 = Random_Player()
-		obj2 = Random_Player()
+		obj1 = Random_Player_Old()
+		obj2 = Random_Player_Old()
 	elif option == '2':
-		obj1 = Player_final(1)
-		obj2 = Random_Player()
+		obj1 = Player_final(5)
+		obj2 = Random_Player_Old()
 	elif option == '3':
 		obj1 = Manual_Player()
 		obj2 = Manual_Player()
 	elif option == '4':
-		obj1 = Random_Player()
+		obj1 = Random_Player_Old()
 		obj2 = TotalRandom_Player()
+	elif option == '5':
+		obj1 = Random_Player_Old()
+		obj2 = Team11()
 	else:
 		print 'Invalid option'
 		sys.exit(1)
