@@ -8,7 +8,7 @@ import traceback
 
 class Random_Player_Old():
 	def __init__(self):
-		self.max_time = 5
+		self.max_time = 15
 		self.move_start_time = time.time()
 		self.win_score = 100000000000
 		pass
@@ -163,14 +163,10 @@ class Random_Player_Old():
 		other_flag = 'x' if flag=='o' else 'o'
 		final = 0
 		
-		score_heuristic = self.current_score(board,flag) - self.current_score(board,other_flag)
-		
+		score_heuristic = self.current_score(board,flag) - self.current_score(board,other_flag)	
 		almost_line_score_small = self.almost_line_small_boards(board,flag) - 0.9*self.almost_line_small_boards(board,other_flag)
-		
 		almost_line_score_big = self.almost_line_big_board(board,flag) - self.almost_line_big_board(board,other_flag)
-		
 		small_boards_weight = self.cells_small_boards(board,flag) - self.cells_small_boards(board,other_flag)
-		
 		big_board_weight = self.cells_big_board(board,flag) - self.cells_big_board(board,other_flag)
 		
 #		final += 0.5 * score_heuristic
@@ -195,17 +191,14 @@ class Random_Player_Old():
 		elif result[1]=='DRAW':
 			return [2, None, depth]
 
-		if depth==0:
+		if depth==0 or time.time() - self.move_start_time > self.max_time:
 			heuristic_score = self.heuristic(board,flag)
 			if player == "min":
 				heuristic_score *= -1
 			# print heuristic_score
 			return [heuristic_score, None, depth] #[Score, Move]
 		
-		#if time.time()-self.move_start_time >= self.max_time:
-		#	return ["stop",(-1,-1,-1)]
 
-		# Check for further error handling - what to return if lost
 		best_move = (-1, -1, -1) if len(cells)==0 else cells[0]
 		save_depth = -1
 		next_bonus = 0
@@ -240,7 +233,7 @@ class Random_Player_Old():
 					save_depth = cur_depth
 			board.big_boards_status[move[0]][move[1]][move[2]] = '-'
 			board.small_boards_status[move[0]][move[1]/3][move[2]/3] = '-'
-			if alpha >= beta:
+			if alpha >= beta or time.time() - self.move_start_time > self.max_time:
 				break
 		return [alpha if (player=="max") else beta, best_move,save_depth]
 
@@ -252,14 +245,10 @@ class Random_Player_Old():
 		depth = 1
 		best_move = (-1, -1, -1)
 		move  = (-1,-1,-1)
-		'''
+
 		while time.time() - self.move_start_time < self.max_time:
-			[score, move] = self.minimax(board_copy, old_move, "max", flag, depth, float("-inf"), float("inf"),0)
+			best_move = move
+			[_, move, _] = self.minimax(board_copy, old_move, "max", flag, depth, float("-inf"), float("inf"), 0)
 			depth += 1
-			if score != "stop":
-				best_move = move
-			print depth
-		'''
-		[score, best_move,d] = self.minimax(board_copy, old_move, "max", flag, 4, float("-inf"), float("inf"),0)
 			
 		return best_move

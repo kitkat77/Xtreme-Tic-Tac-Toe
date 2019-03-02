@@ -1,6 +1,7 @@
 from Team4 import *
 from puru import *
-from anshita import *
+import sanjana
+import anshita
 from vaibhav import *
 
 ''' 
@@ -370,19 +371,19 @@ if __name__ == '__main__':
 	obj2 = ''
 	option = sys.argv[1]	
 	if option == '1':
-		obj1 = Random_Player_Old()
-		obj2 = Random_Player_Old()
+		obj1 = anshita.Random_Player_Old()
+		obj2 = sanjana.Random_Player_Old()
 	elif option == '2':
 		obj1 = Player_final(5)
-		obj2 = Random_Player_Old()
+		obj2 = anshita.Random_Player_Old()
 	elif option == '3':
 		obj1 = Manual_Player()
 		obj2 = Manual_Player()
 	elif option == '4':
-		obj1 = Random_Player_Old()
+		obj1 = anshita.Random_Player_Old()
 		obj2 = TotalRandom_Player()
 	elif option == '5':
-		obj1 = Random_Player_Old()
+		obj1 = anshita.Random_Player_Old()
 		obj2 = Team11()
 	else:
 		print 'Invalid option'
