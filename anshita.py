@@ -8,7 +8,8 @@ import traceback
 
 class Random_Player_Old():
 	def __init__(self):
-		self.max_time = 21
+		self.max_time = 22
+		self.not_bonus = True
 		self.move_start_time = time.time()
 		self.win_score = 100000000000
 

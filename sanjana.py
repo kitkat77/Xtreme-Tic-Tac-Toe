@@ -12,7 +12,8 @@ class Random_Player_Old():
         self.other_player = None
         self.move_start_time = time.time()
         self.move_count = 0
-        self.MAX_TIME = 21
+        self.is_bonus_move = False
+        self.MAX_TIME = 22
         self.WIN_SCORE = 100000000000
     
 
@@ -34,9 +35,18 @@ class Random_Player_Old():
 
         while time.time() - self.move_start_time < self.MAX_TIME:
             best_move = move
-            [_, move, _] = self.minimax(board_copy, old_move, flag, depth, float("-inf"), float("inf"), False)
+            [_, move, _] = self.minimax(board_copy, old_move, flag, depth, float("-inf"), float("inf"), self.is_bonus_move)
             depth += 1
         
+
+        new_board = copy.deepcopy(board)
+        new_board.update(old_move, best_move, flag)
+
+        if self.small_board_change(new_board, board) and not self.is_bonus_move:
+            self.is_bonus_move = True
+        else:
+            self.is_bonus_move = False
+
         return best_move
 
 
@@ -46,7 +56,7 @@ class Random_Player_Old():
         # Check terminal state
         end_result = board.find_terminal_state()
         if end_result[1] == 'WON':
-            return [self.WIN_SCORE if end_result[0]==self.player else -self.WIN_SCORE, None, depth]
+            return [self.WIN_SCORE if (end_result[0]==self.player and flag==self.player) else -self.WIN_SCORE, None, depth]
         elif end_result[1] == 'DRAW':
             return [self.draw_score(board), None, depth]
     
@@ -56,11 +66,11 @@ class Random_Player_Old():
 
 
         cells = board.find_valid_move_cells(old_move)
-        if self.get_other_player_major_board(board) == 1:
-            sorted(cells, key=lambda x: x[0])
-        else:
-            sorted(cells, key=lambda x: x[0], reverse=True)
-        
+        # if self.get_other_player_major_board(board) == 1:
+        #     sorted(cells, key=lambda x: x[0], reverse=True)
+        # else:
+        #     sorted(cells, key=lambda x: x[0])
+        sorted(cells, key=lambda x: x[0], reverse=True)
 
         original_board = copy.deepcopy(board)
         best_move = (-1, -1, -1) if len(cells)==0 else cells[0]
@@ -86,7 +96,7 @@ class Random_Player_Old():
             else:
                 if score < beta:
                     beta, best_move, best_depth = score, move, move_depth
-                elif score == beta and move_depth < best_depth:
+                elif score == beta and move_depth > best_depth:
                     best_move, best_depth = move, move_depth
             
             board.big_boards_status[move[0]][move[1]][move[2]] = '-'
@@ -186,11 +196,11 @@ class Random_Player_Old():
         small_weight_scale = 20
         big_weight_scale = 100
 
-        if self.winning(board) or self.move_count > 20:
-            small_almost_line_scale = 50
-            big_almost_line_scale = 100
-            small_weight_scale = 10
-            big_weight_scale = 150
+        if self.winning(board) or self.move_count > 10:
+            small_almost_line_scale = 10
+            big_almost_line_scale = 300
+            small_weight_scale = 2
+            big_weight_scale = 15
     
 
         small_almost_line = self.small_boards_almost_line(board, self.player) - self.small_boards_almost_line(board, self.other_player)
