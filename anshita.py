@@ -66,15 +66,15 @@ class Random_Player_Old():
 		count = 0
 		if board[0][0] == flag and board[1][1] == flag and board[2][2] == '-':
 			count+=1
-		elif board[1][1] == flag and board[2][2] == flag and board[0][0] == '-':
+		if board[1][1] == flag and board[2][2] == flag and board[0][0] == '-':
 			count+=1
-		elif board[2][2] == flag and board[0][0] == flag and board[1][1] == '-':
+		if board[2][2] == flag and board[0][0] == flag and board[1][1] == '-':
 			count+=1
-		elif board[0][2] == flag and board[1][1] == flag and board[2][0] == '-':
+		if board[0][2] == flag and board[1][1] == flag and board[2][0] == '-':
 			count+=1
-		elif board[2][0] == flag and board[1][1] == flag and board[0][2] == '-':
+		if board[2][0] == flag and board[1][1] == flag and board[0][2] == '-':
 			count+=1
-		elif board[0][2] == flag and board[2][0] == flag and board[1][1] == '-':
+		if board[0][2] == flag and board[2][0] == flag and board[1][1] == '-':
 			count+=1
 		return count
 
@@ -114,14 +114,12 @@ class Random_Player_Old():
 
 
 	# returns weight of a 3x3 board for flag ARBITRARILY DECIDED
-	def weighted_cells(self,board,flag):
+	def weighted_cells(self,board,flag,board_type):
 		total = 0
-		#corner weight
-		cor = 4
-		# center weight
-		cen = 6
-		# other weight
-		oth = 3
+		if board_type=="big":
+			cen, cor, oth = 6, 4, 3
+		else:
+			cen, cor, oth = 3, 4, 6
 		w = [[cor,oth,cor],[oth,cen,oth],[cor,oth,cor]]
 		for i in range(3):
 			for j in range(3):
@@ -147,14 +145,14 @@ class Random_Player_Old():
 						for q in range(3):
 							cur_row.append(bbs[i+p][j+q])
 						cur_board.append(cur_row)
-					counter += self.weighted_cells(cur_board,flag)
+					counter += self.weighted_cells(cur_board,flag, "small")
 		return counter
 
 	def cells_big_board(self,board,flag):
 		counter = 0
 		for t in range(2):
 			cur_board = copy.deepcopy(board.small_boards_status[t])
-			counter += self.weighted_cells(cur_board,flag)
+			counter += self.weighted_cells(cur_board,flag,"big")
 		return counter
 
 
