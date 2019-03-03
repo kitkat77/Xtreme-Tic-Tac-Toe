@@ -242,7 +242,6 @@ class Random_Player_Old():
 
 		depth = 1
 		best_move = (-1, -1, -1)
-		best_score = -1
 		move  = (-1,-1,-1)
 
 		while time.time() - self.move_start_time < self.max_time:
