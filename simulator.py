@@ -1,7 +1,6 @@
-from Team4 import *
 from puru import *
-import sanjana
 import anshita
+import main
 from vaibhav import *
 
 ''' 
@@ -381,7 +380,7 @@ if __name__ == '__main__':
 		obj2 = Manual_Player()
 	elif option == '4':
 		obj1 = anshita.Random_Player_Old()
-		obj2 = TotalRandom_Player()
+		obj2 = main.player()
 	elif option == '5':
 		obj1 = anshita.Random_Player_Old()
 		obj2 = Team11()
