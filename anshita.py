@@ -9,7 +9,7 @@ import traceback
 class Random_Player_Old():
 	def __init__(self):
 		self.max_time = 22
-		self.not_bonus = True
+		self.is_bonus_move = False
 		self.move_start_time = time.time()
 		self.win_score = 100000000000
 
@@ -247,7 +247,15 @@ class Random_Player_Old():
 
 		while time.time() - self.move_start_time < self.max_time:
 			best_move = move
-			[_, move, _] = self.minimax(board_copy, old_move, "max", flag, depth, float("-inf"), float("inf"), 0)
+			[_, move, _] = self.minimax(board_copy, old_move, "max", flag, depth, float("-inf"), float("inf"), self.is_bonus_move)
 			depth += 1
-			
+		
+		new_board = copy.deepcopy(board)
+		new_board.update(old_move, best_move, flag)
+
+		if self.small_board_change(new_board, board) and not self.is_bonus_move:
+			self.is_bonus_move = True
+		else:
+			self.is_bonus_move = False
+		
 		return best_move
