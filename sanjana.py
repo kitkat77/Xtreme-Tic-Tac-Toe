@@ -59,7 +59,7 @@ class Random_Player_Old():
         # Check terminal state
         end_result = board.find_terminal_state()
         if end_result[1] == 'WON':
-            return [self.WIN_SCORE if (end_result[0]==self.player and flag==self.player) else -self.WIN_SCORE, old_move, depth]
+            return [self.WIN_SCORE if (end_result[0]==self.player) else -self.WIN_SCORE, old_move, depth]
         elif end_result[1] == 'DRAW':
             return [self.draw_score(board), old_move, depth]
     
