@@ -11,7 +11,6 @@ class Random_Player_Old():
 		self.max_time = 15
 		self.move_start_time = time.time()
 		self.win_score = 100000000000
-		pass
 
 
 	def small_board_change(self,board1,board2):
@@ -24,18 +23,6 @@ class Random_Player_Old():
 						return 1
 
 		return 0
-
-
-	# returns score in board for player 'flag'
-	def current_score(self,board,flag):
-		current_score = 0
-		scheme = [[4,6,4],[6,3,6],[4,6,4]]
-		for i in range(2):
-			for j in range(3):
-				for k in range(3):
-					if board.small_boards_status[i][j][k] == flag:
-						current_score += scheme[j][k]
-		return current_score
 
 
 	# returns number of 2-in-a-row flag for 3x3 board, assuming the board hasnt't been one
@@ -61,6 +48,7 @@ class Random_Player_Old():
 				cur_row.append(board[j][i])
 			b.append(cur_row)
 		return self.almost_row(b,flag)
+
 
 	def almost_diagonal(self,board,flag):
 		count = 0
@@ -155,19 +143,31 @@ class Random_Player_Old():
 			counter += self.weighted_cells(cur_board,flag,"big")
 		return counter
 
+	def draw_value(self, board, flag):
+		current_score = 0
+		other_flag = 'x' if flag=='o' else 'o'
+
+		for i in range(2):
+			scheme = [[4,6,4],[6,3,6],[4,6,4]]
+			for j in range(3):
+				for k in range(3):
+					if board.small_boards_status[i][j][k] == flag:
+						current_score += scheme[j][k]
+					elif board.small_boards_status[i][j][k] == other_flag:
+						current_score -= scheme[j][k]
+		return current_score
+
 
 	# returns heuristic for board if flag is the symbol of the player
 	def heuristic(self,board,flag):
 		other_flag = 'x' if flag=='o' else 'o'
 		final = 0
 		
-		score_heuristic = self.current_score(board,flag) - self.current_score(board,other_flag)	
 		almost_line_score_small = self.almost_line_small_boards(board,flag) - 0.9*self.almost_line_small_boards(board,other_flag)
 		almost_line_score_big = self.almost_line_big_board(board,flag) - self.almost_line_big_board(board,other_flag)
 		small_boards_weight = self.cells_small_boards(board,flag) - self.cells_small_boards(board,other_flag)
 		big_board_weight = self.cells_big_board(board,flag) - self.cells_big_board(board,other_flag)
 		
-#		final += 0.5 * score_heuristic
 		final += 10 * almost_line_score_small 
 		final += 300 * almost_line_score_big
 		final += 2 * small_boards_weight
@@ -187,7 +187,7 @@ class Random_Player_Old():
 			return [-self.win_score if (result[0]==flag) else self.win_score, None, depth]
 
 		elif result[1]=='DRAW':
-			return [2, None, depth]
+			return [self.draw_value(board, flag), None, depth]
 
 		if depth==0 or time.time() - self.move_start_time > self.max_time:
 			heuristic_score = self.heuristic(board,flag)
@@ -236,7 +236,7 @@ class Random_Player_Old():
 		return [alpha if (player=="max") else beta, best_move,save_depth]
 
 	def move(self, board, old_move, flag):
-		# TAKE CARE OF CASE WHEN EVERYTHING IS ALLOWED IN THE BEGINNING
+
 		board_copy = copy.deepcopy(board)
 		self.move_start_time = time.time()
 
