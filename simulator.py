@@ -371,8 +371,8 @@ if __name__ == '__main__':
 	obj2 = ''
 	option = sys.argv[1]	
 	if option == '1':
-		obj2 = anshita.Random_Player_Old()
-		obj1 = sanjana.Random_Player_Old()
+		obj1 = anshita.Random_Player_Old()
+		obj2 = sanjana.Random_Player_Old()
 	elif option == '2':
 		obj1 = Player_final(5)
 		obj2 = anshita.Random_Player_Old()
@@ -383,8 +383,8 @@ if __name__ == '__main__':
 		obj1 = sanjana.Random_Player_Old()
 		obj2 = main.player()
 	elif option == '5':
-		obj2 = sanjana.Random_Player_Old()
-		obj1 = Team11()
+		obj1 = sanjana.Random_Player_Old()
+		obj2 = Team11()
 	else:
 		print 'Invalid option'
 		sys.exit(1)

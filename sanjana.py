@@ -12,6 +12,7 @@ class Random_Player_Old():
         self.player = None
         self.other_player = None
         self.move_start_time = time.time()
+        self.move_count = 0
         self.MAX_TIME = 15
         self.WIN_SCORE = 100000000000
     
@@ -20,6 +21,8 @@ class Random_Player_Old():
     def move(self, board, old_move, flag):
 
         self.move_start_time = time.time()
+
+        self.move_count += 1
         board_copy = copy.deepcopy(board)
 
         if not self.player and not self.other_player:
@@ -109,29 +112,73 @@ class Random_Player_Old():
     def draw_score(self, board):
 
         score = 0
-        scheme = [[4,6,4],[6,3,6],[4,6,4]]
+
+        center = corner = other = 0 
+        if self.winning(board):
+            center, corner, other = 3, 4, 3
+        else:
+            center, corner, other = 100, 100, 100
+        
+        scheme = [[corner,other,corner],[other,center,other],[corner,other,corner]]
 
         for i in range(2):
             for j in range(3):
                 for k in range(3):
-                    if board.small_boards_status[i][j][j] == self.player:
+                    if board.small_boards_status[i][j][k] == self.player:
                         score += scheme[j][k]
-                    elif board.small_boards_status[i][j][j] == self.other_player:
+                    elif board.small_boards_status[i][j][k] == self.other_player:
                         score -= scheme[j][k]
         
         return score
     
 
+    def winning(self, board):
+
+        player_win_count = 0
+        other_player_win_count = 0
+
+        for i in range(2):
+            for j in range(3):
+                for k in range(3):
+                    if board.small_boards_status[i][j][k] == self.player:
+                        player_win_count += 1
+                    elif board.small_boards_status[i][j][k] == self.other_player:
+                        other_player_win_count += 1
+        
+        if player_win_count > other_player_win_count:
+            return True
+        else:
+            return False
+
+
     # Heuristic
     def heuristic(self, board):
         
+        heuristic_score = 0
+
+        small_almost_line_scale = 50
+        big_almost_line_scale = 10
+        small_weight_scale = 70
+        big_weight_scale = 500
+
+        if self.winning(board):
+            small_almost_line_scale = 50
+            big_almost_line_scale = 500
+            small_weight_scale = 10
+            big_weight_scale = 100
+    
+
         small_almost_line = self.small_boards_almost_line(board, self.player) - self.small_boards_almost_line(board, self.other_player)
         big_almost_line = self.big_board_almost_line(board, self.player) - self.big_board_almost_line(board, self.other_player)
         small_weight = self.small_boards_cells_weight(board, self.player) - self.small_boards_cells_weight(board, self.other_player)
         big_weight = self.big_board_cells_weight(board, self.player) - self.big_board_cells_weight(board, self.other_player)
 
+        heuristic_score += small_almost_line * small_almost_line_scale
+        heuristic_score += big_almost_line * big_almost_line_scale
+        heuristic_score += small_weight * small_weight_scale
+        heuristic_score += big_weight * big_weight_scale
 
-        return (small_almost_line + big_almost_line + small_weight + big_weight)
+        return heuristic_score
 
 
     # Give weights to cells
