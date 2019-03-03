@@ -1,6 +1,5 @@
 import sys
 import random
-import signal
 import time
 import copy
 import traceback
@@ -183,12 +182,12 @@ class Random_Player_Old():
 		
 		result = board.find_terminal_state()
 		if result[1]=='WON' and player == "max":
-			return [self.win_score if (result[0]==flag) else -self.win_score, None, depth]
+			return [self.win_score if (result[0]==flag) else -self.win_score, old_move, depth]
 		if result[1]=='WON' and player == "min":
-			return [-self.win_score if (result[0]==flag) else self.win_score, None, depth]
+			return [-self.win_score if (result[0]==flag) else self.win_score, old_move, depth]
 
 		elif result[1]=='DRAW':
-			return [self.draw_value(board, flag), None, depth]
+			return [self.draw_value(board, flag), old_move, depth]
 
 		if depth==0 or time.time() - self.move_start_time > self.max_time:
 			heuristic_score = self.heuristic(board,flag)
@@ -243,6 +242,7 @@ class Random_Player_Old():
 
 		depth = 1
 		best_move = (-1, -1, -1)
+		best_score = -1
 		move  = (-1,-1,-1)
 
 		while time.time() - self.move_start_time < self.max_time:
