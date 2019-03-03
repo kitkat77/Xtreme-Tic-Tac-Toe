@@ -163,7 +163,7 @@ class Random_Player_Old():
 		other_flag = 'x' if flag=='o' else 'o'
 		final = 0
 		
-		almost_line_score_small = self.almost_line_small_boards(board,flag) - 0.9*self.almost_line_small_boards(board,other_flag)
+		almost_line_score_small = self.almost_line_small_boards(board,flag) - self.almost_line_small_boards(board,other_flag)
 		almost_line_score_big = self.almost_line_big_board(board,flag) - self.almost_line_big_board(board,other_flag)
 		small_boards_weight = self.cells_small_boards(board,flag) - self.cells_small_boards(board,other_flag)
 		big_board_weight = self.cells_big_board(board,flag) - self.cells_big_board(board,other_flag)

@@ -46,12 +46,12 @@ class Random_Player_Old():
         if end_result[1] == 'WON':
             return [self.WIN_SCORE if end_result[0]==self.player else -self.WIN_SCORE, None, depth]
         elif end_result[1] == 'DRAW':
-            return [2, None, depth] #CHANGE
+            return [self.draw_score(board), None, depth]
     
 
         # Return if max depth or time out 
         if depth == 0 or time.time() - self.move_start_time > self.MAX_TIME:
-            return [0, None, depth] #CHANGE
+            return [self.heuristic(board), None, depth]
 
 
         cells = board.find_valid_move_cells(old_move)
@@ -103,3 +103,183 @@ class Random_Player_Old():
                         return True
         
         return False
+
+
+    # Draw
+    def draw_score(self, board):
+
+        score = 0
+        scheme = [[4,6,4],[6,3,6],[4,6,4]]
+
+        for i in range(2):
+            for j in range(3):
+                for k in range(3):
+                    if board.small_boards_status[i][j][j] == self.player:
+                        score += scheme[j][k]
+                    elif board.small_boards_status[i][j][j] == self.other_player:
+                        score -= scheme[j][k]
+        
+        return score
+    
+
+    # Heuristic
+    def heuristic(self, board):
+        
+        small_almost_line = self.small_boards_almost_line(board, self.player) - self.small_boards_almost_line(board, self.other_player)
+        big_almost_line = self.big_board_almost_line(board, self.player) - self.big_board_almost_line(board, self.other_player)
+        small_weight = self.small_boards_cells_weight(board, self.player) - self.small_boards_cells_weight(board, self.other_player)
+        big_weight = self.big_board_cells_weight(board, self.player) - self.big_board_cells_weight(board, self.other_player)
+
+
+        return (small_almost_line + big_almost_line + small_weight + big_weight)
+
+
+    # Give weights to cells
+    def weighted_cells(self, board, flag, board_type):
+
+        total_weight = 0
+
+        center = corner = other = 0 
+        if board_type == "big":
+            center, corner, other = 6, 4, 3
+        else:
+            center, corner, other = 3, 4, 6
+        weights = [[corner,other,corner],[other,center,other],[corner,other,corner]]
+
+        for i in range(3):
+            for j in range(3):
+                if board[i][j] == flag:
+                    total_weight += weights[i][j]
+        
+        return total_weight
+    
+
+    # Returns weights for each big board cell
+    def big_board_cells_weight(self, board, flag):
+
+        bb_weight = 0
+        for i in range(2):
+            bb_weight += self.weighted_cells(board.small_boards_status[i], flag, "big")
+        
+        return bb_weight
+    
+
+    # Returns weight for each cell in all small boards
+    def small_boards_cells_weight(self, board, flag):
+
+        sb_weight = 0
+
+        for i in range(2):
+
+            bb = copy.deepcopy(board.big_boards_status[i])
+            sb = copy.deepcopy(board.small_boards_status[i])
+
+            for j in range(0, 9, 3):
+                for k in range(0, 9, 3):
+
+                    if sb[j/3][k/3] != '-':
+                        continue
+
+                    cur_small_board = []
+
+                    for p in range(3):
+                        cur_row = []
+                        for q in range(3):
+                            cur_row.append(bb[j+p][k+q])
+                        cur_small_board.append(cur_row)
+                    
+                    sb_weight += self.weighted_cells(cur_small_board, flag, "small")
+        
+        return sb_weight
+
+
+    # Checks if there are 2 in a row
+    def almost_row(self, board, flag):
+            
+        count = 0
+        for i in range(3):
+            row = board[i]
+            if row[0] == flag and row[1] == flag and row[2] == '-':
+                count += 1
+            if row[0] == flag and row[2] == flag and row[1] == '-':
+                count += 1
+            if row[2] == flag and row[1] == flag and row[0] == '-':
+                count += 1
+        
+        return count
+
+    
+    # Checks if there are two in a column
+    def almost_column(self, board, flag):
+        
+        transpose_board = []
+        for i in range(3):
+            cur_row = []
+            for j in range(3):
+                cur_row.append(board[j][i])
+            transpose_board.append(cur_row)
+        
+        return self.almost_row(transpose_board, flag)
+    
+
+    # Checks if there are two in a diagonal
+    def almost_diagonal(self, board, flag):
+
+        count = 0
+        if board[0][0] == flag and board[1][1] == flag and board[2][2] == '-':
+            count += 1
+        if board[1][1] == flag and board[2][2] == flag and board[0][0] == '-':
+            count += 1
+        if board[2][2] == flag and board[0][0] == flag and board[1][1] == '-':
+            count += 1
+        if board[0][2] == flag and board[1][1] == flag and board[2][0] == '-':
+            count += 1
+        if board[2][0] == flag and board[1][1] == flag and board[0][2] == '-':
+            count += 1
+        if board[0][2] == flag and board[2][0] == flag and board[1][1] == '-':
+            count += 1
+        
+        return count
+
+    
+    # Checks for two in a line in big board
+    def big_board_almost_line(self, board, flag):
+
+        count = 0
+        for i in range(2):
+            count += self.almost_row(board.big_boards_status[i], flag)
+            count += self.almost_column(board.big_boards_status[i], flag)
+            count += self.almost_diagonal(board.big_boards_status[i], flag)
+        
+        return count
+    
+
+    # Checks for two in a line in small boards
+    def small_boards_almost_line(self, board, flag):
+
+        count = 0
+
+        for i in range(2):
+
+            bb = copy.deepcopy(board.big_boards_status[i])
+            sb = copy.deepcopy(board.small_boards_status[i])
+
+            for j in range(0, 9, 3):
+                for k in range(0, 9, 3):
+
+                    if sb[j/3][k/3] != '-':
+                        continue
+
+                    cur_small_board = []
+
+                    for p in range(3):
+                        cur_row = []
+                        for q in range(3):
+                            cur_row.append(bb[j+p][k+q])
+                        cur_small_board.append(cur_row)
+                    
+                    count += self.almost_row(cur_small_board, flag)
+                    count += self.almost_column(cur_small_board, flag)
+                    count += self.almost_diagonal(cur_small_board, flag)
+        
+        return count
