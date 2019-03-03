@@ -32,10 +32,13 @@ class Random_Player_Old():
         depth = 1
         best_move = (-1, -1, -1)
         move = (-1, -1, -1)
+        best_score = -1
 
         while time.time() - self.move_start_time < self.MAX_TIME:
             best_move = move
-            [_, move, _] = self.minimax(board_copy, old_move, flag, depth, float("-inf"), float("inf"), self.is_bonus_move)
+            if best_score == self.WIN_SCORE:
+                break
+            [best_score, move, _] = self.minimax(board_copy, old_move, flag, depth, float("-inf"), float("inf"), self.is_bonus_move)
             depth += 1
         
 
@@ -56,13 +59,13 @@ class Random_Player_Old():
         # Check terminal state
         end_result = board.find_terminal_state()
         if end_result[1] == 'WON':
-            return [self.WIN_SCORE if (end_result[0]==self.player and flag==self.player) else -self.WIN_SCORE, None, depth]
+            return [self.WIN_SCORE if (end_result[0]==self.player and flag==self.player) else -self.WIN_SCORE, old_move, depth]
         elif end_result[1] == 'DRAW':
-            return [self.draw_score(board), None, depth]
+            return [self.draw_score(board), old_move, depth]
     
         # Return if max depth or time out 
         if depth == 0 or time.time() - self.move_start_time > self.MAX_TIME:
-            return [self.heuristic(board), None, depth]
+            return [self.heuristic(board), old_move, depth]
 
 
         cells = board.find_valid_move_cells(old_move)

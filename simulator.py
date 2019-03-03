@@ -377,11 +377,11 @@ if __name__ == '__main__':
 		obj2 = Player_final(5)
 		obj1 = sanjana.Random_Player_Old()
 	elif option == '3':
-		obj1 = anshita.Random_Player_Old()
+		obj1 = sanjana.Random_Player_Old()
 		obj2 = main.player()
 	elif option == '4':
-		obj2 = sanjana.Random_Player_Old()
-		obj1 = main.player()
+		obj1 = sanjana.Random_Player_Old()
+		obj2 = main.player()
 	elif option == '5':
 		obj2 = sanjana.Random_Player_Old()
 		obj1 = Team11()
