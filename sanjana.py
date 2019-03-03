@@ -7,13 +7,12 @@ import traceback
 
 class Random_Player_Old():
 
-
     def __init__(self):
         self.player = None
         self.other_player = None
         self.move_start_time = time.time()
         self.move_count = 0
-        self.MAX_TIME = 15
+        self.MAX_TIME = 21
         self.WIN_SCORE = 100000000000
     
 
@@ -51,13 +50,18 @@ class Random_Player_Old():
         elif end_result[1] == 'DRAW':
             return [self.draw_score(board), None, depth]
     
-
         # Return if max depth or time out 
         if depth == 0 or time.time() - self.move_start_time > self.MAX_TIME:
             return [self.heuristic(board), None, depth]
 
 
         cells = board.find_valid_move_cells(old_move)
+        if self.get_other_player_major_board(board) == 1:
+            sorted(cells, key=lambda x: x[0])
+        else:
+            sorted(cells, key=lambda x: x[0], reverse=True)
+        
+
         original_board = copy.deepcopy(board)
         best_move = (-1, -1, -1) if len(cells)==0 else cells[0]
         best_depth = -1 if (flag==self.player) else 100000000000
@@ -132,6 +136,7 @@ class Random_Player_Old():
         return score
     
 
+    # Checks is player is winning or not
     def winning(self, board):
 
         player_win_count = 0
@@ -151,21 +156,41 @@ class Random_Player_Old():
             return False
 
 
+    # Check other player's major board
+    def get_other_player_major_board(self, board):
+
+        board1_count = 0
+        board2_count = 0
+
+        for i in range(2):
+            for j in range(9):
+                for k in range(9):
+                    if board.big_boards_status[i][j][k] == self.other_player:
+                        if i == 0:
+                            board1_count += 1
+                        else:
+                            board2_count += 1
+        
+        if board1_count >= board2_count:
+            return 1
+        else:
+            return 2
+
     # Heuristic
     def heuristic(self, board):
         
         heuristic_score = 0
 
-        small_almost_line_scale = 50
-        big_almost_line_scale = 10
-        small_weight_scale = 70
-        big_weight_scale = 500
+        small_almost_line_scale = 80
+        big_almost_line_scale = 50
+        small_weight_scale = 20
+        big_weight_scale = 100
 
-        if self.winning(board):
+        if self.winning(board) or self.move_count > 20:
             small_almost_line_scale = 50
-            big_almost_line_scale = 500
+            big_almost_line_scale = 100
             small_weight_scale = 10
-            big_weight_scale = 100
+            big_weight_scale = 150
     
 
         small_almost_line = self.small_boards_almost_line(board, self.player) - self.small_boards_almost_line(board, self.other_player)
@@ -188,7 +213,7 @@ class Random_Player_Old():
 
         center = corner = other = 0 
         if board_type == "big":
-            center, corner, other = 6, 4, 3
+            center, corner, other = 6, 6, 6
         else:
             center, corner, other = 3, 4, 6
         weights = [[corner,other,corner],[other,center,other],[corner,other,corner]]
